@@ -1,18 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import ForgeReconciler, { Text } from '@forge/react';
-import { invoke } from '@forge/bridge';
+import ForgeReconciler from '@forge/react';
+import { getToken } from "./services/tokenService";
+import Skeleton from './util/Skeleton';
+import AuthPage from './auth/AuthPage';
+import DashboardPage from './dashboard/DashboardPage';
+
 const App = () => {
-  const [data, setData] = useState(null);
+  const [apiToken, setApiToken] = useState({ loading: false, value: null });
+  const setLoadingApiToken = () => setApiToken({ loading: true, value: null });
+
   useEffect(() => {
-    invoke('getText', { example: 'my-invoke-variable' }).then(setData);
+    setLoadingApiToken();
+    getToken()
+      .then(token => {
+        console.log('getToken() backend response:', token);
+        setApiToken({ loading: false, value: token });
+      });
   }, []);
+  
+  const { loading, value } = apiToken;
   return (
-    <>
-      <Text>Hello world!</Text>
-      <Text>{data ? data : 'Loading...'}</Text>
-    </>
+    <Skeleton loading={loading}>
+      {value 
+        ? <DashboardPage apiToken={value} deleteToken={() => setApiToken({ loading: false, value: null })} />
+        : <AuthPage saveToken={token => setApiToken({ loading: false, value: token })} />}
+    </Skeleton>
   );
 };
+
 ForgeReconciler.render(
   <React.StrictMode>
     <App />

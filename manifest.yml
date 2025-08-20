@@ -1,20 +1,26 @@
 modules:
   jira:adminPage:
     - key: github-link-hello-world-admin-page
+      title: "Github Link"
       resource: main
       resolver:
         function: resolver
       render: native
-      title: github-link
   function:
     - key: resolver
       handler: index.handler
 resources:
   - key: main
     path: src/frontend/index.jsx
+permissions:
+  scopes:
+    - storage:app
+  external:
+    images:
+      - https://www.molecularecologist.com
 app:
   runtime:
     name: nodejs22.x
     memoryMB: 256
     architecture: arm64
-  id: ari:cloud:ecosystem::app/168135de-3fe2-4bf3-bc02-5d81bb59806d
+  id: ari:cloud:ecosystem::app/06c73744-7d9e-47f1-b709-34e6e016e245

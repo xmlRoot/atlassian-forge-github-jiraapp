@@ -16,12 +16,12 @@ See [Set up Forge](https://developer.atlassian.com/platform/forge/set-up-forge/)
 
 - Build and deploy your app by running:
 ```
-forge deploy
+forge deploy -e 
 ```
 
 - Install your app in an Atlassian site by running:
 ```
-forge install
+forge install --upgrade -p Jira -s atlassiandevhub.atlassian.net
 ```
 
 - Develop your app by running `forge tunnel` to proxy invocations locally:
