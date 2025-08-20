@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ForgeReconciler from '@forge/react';
-import { getToken } from "./services/tokenService";
+import { getToken } from "./api/tokenApi";
 import Skeleton from './util/Skeleton';
 import AuthPage from './auth/AuthPage';
 import DashboardPage from './dashboard/DashboardPage';

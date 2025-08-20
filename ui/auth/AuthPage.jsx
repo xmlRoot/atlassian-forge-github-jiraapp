@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Form, FormHeader, FormSection, FormFooter, Label, Textfield, LoadingButton, HelperMessage, Stack, Image, RequiredAsterisk, useForm, ErrorMessage, SectionMessage, Text } from '@forge/react';
-import { login } from "../services/tokenService";
+import { Box, Form, FormHeader, FormSection, FormFooter, Label, Textfield, LoadingButton, HelperMessage, Stack, Image, RequiredAsterisk, useForm, ErrorMessage, SectionMessage, Text } from '@forge/react';
+import { login } from "../api/tokenApi";
 
 const AuthPage = ({ saveToken }) => {
   const { register, getFieldId, handleSubmit, formState: { errors, isSubmitting } } = useForm();
@@ -24,7 +24,8 @@ const AuthPage = ({ saveToken }) => {
   }
   return (
     <Stack grow="fill" alignBlock="center" alignInline="center">
-        <Stack space="space.200" alignInline="center">
+        <Stack space="space.100" alignInline="center">
+            <Box />
             <Form onSubmit={handleSubmit(onLoginSuccess)}>
                 <FormHeader title="Login">
                     Connect your GitHub account to view the Dashboard.

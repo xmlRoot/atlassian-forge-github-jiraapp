@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, FormHeader, FormFooter, LoadingButton, Text, useForm } from '@forge/react';
-import { logout } from "../services/tokenService";
+import { logout } from "../api/tokenApi";
 
 const DashboardPage = ({ apiToken, deleteToken }) => {
   const { handleSubmit } = useForm();
