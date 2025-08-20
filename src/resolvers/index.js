@@ -3,6 +3,7 @@ import { getGithubApiToken, saveGithubApiToken, deleteGithubApiToken } from '../
 
 const resolver = new Resolver();
 
+// Token Service endpoints
 resolver.define('getGithubApiToken', getGithubApiToken);
 resolver.define('saveGithubApiToken', saveGithubApiToken);
 resolver.define('deleteGithubApiToken', deleteGithubApiToken);
