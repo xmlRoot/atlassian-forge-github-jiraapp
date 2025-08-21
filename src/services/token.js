@@ -1,4 +1,5 @@
 import { kvs } from '@forge/kvs';
+import { isValidToken } from '../clients/github';
 
 const GITHUB_API_TOKEN_KEY = 'github-api-token';
 
@@ -13,17 +14,27 @@ export const getGithubApiToken = async () => {
   }
 };
 
-const validateToken = token => {
+const validateToken = async token => {
   if (!token || token.length < 40) {
-    throw Error("Token should contain at least 40 characters");
+    return Error("Token should contain at least 40 characters");
+  } 
+  const isValid = await isValidToken(token);
+  if (!isValid) {
+    return Error("Token cannot authenticate with GitHub");
   }
+
+  return null;
 }
 
 export const saveGithubApiToken = async ({ payload }) => {
   console.log('saveGithubApiToken parameters:', payload);
   const { token } = payload;
+  const error = await validateToken(token);
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
   try {
-    validateToken(token);
     const result = await kvs.setSecret(GITHUB_API_TOKEN_KEY, token);
     console.log('Saved token in DB:', result);
     return { ok: true };

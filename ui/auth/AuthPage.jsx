@@ -38,15 +38,21 @@ const AuthPage = ({ saveToken }) => {
                 </FormSection>
                 <FormSection>
                     <Label labelFor={getFieldId('token')}>GitHub API token <RequiredAsterisk /></Label>
-                    <Textfield {...register('token', { required: true, minLength: {value: 5, message: 'Token must be at least 5 characters long'} })} placeholder="Enter your GitHub API token" />
+                    <Textfield 
+                      placeholder="Enter your GitHub API token" 
+                      {...register('token', { 
+                        required: true, 
+                        minLength: { value: 5, message: 'Token must be at least 5 characters long'} 
+                      })}
+                    />
                     <HelperMessage>Use a dedicated Personal Access Token (Classic) created in GitHub.</HelperMessage>
                     {errors.token && <ErrorMessage>{errors.token.message}</ErrorMessage>}
                 </FormSection>
-                <FormFooter>
-                    <LoadingButton shouldFitContainer appearance="primary" type="submit" isLoading={isLoadingForm} >
-                        Login
-                    </LoadingButton>
-                </FormFooter>
+                <FormSection>
+                  <LoadingButton shouldFitContainer appearance="primary" type="submit" isLoading={isLoadingForm} >
+                    Login
+                  </LoadingButton>
+                </FormSection>
             </Form>
         </Stack>
     </Stack>

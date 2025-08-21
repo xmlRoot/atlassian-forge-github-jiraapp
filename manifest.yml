@@ -16,6 +16,9 @@ permissions:
   scopes:
     - storage:app
   external:
+    fetch:
+      backend:
+        - address: https://api.github.com
     images:
       - address: https://www.molecularecologist.com
 app:

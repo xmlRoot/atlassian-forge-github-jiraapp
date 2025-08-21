@@ -20,7 +20,7 @@ const App = () => {
   
   const { loading, value } = apiToken;
   return (
-    <Skeleton loading={loading}>
+    <Skeleton loading={loading} centered>
       {value 
         ? <DashboardPage apiToken={value} deleteToken={() => setApiToken({ loading: false, value: null })} />
         : <AuthPage saveToken={token => setApiToken({ loading: false, value: token })} />}
