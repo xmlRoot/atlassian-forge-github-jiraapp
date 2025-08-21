@@ -25,18 +25,7 @@ const PullRequestTable = ({ repository }) => {
     const loginData = useContext(LoginContext);
 
     const [loading, setLoading] = useState(false);
-    const [pullRequests, setPullRequests] = useState([]);
-
-    useEffect(() => {
-        if (loginData.token) {
-            setLoading(true);
-            getAllOpenPRs(loginData.token, repository.owner, repository.name)
-                .then(data => {
-                    setLoading(false);
-                    setPullRequests(data);
-                });
-        }
-    }, [loginData.token, repository]);
+    const [pullRequests, setPullRequests] = useState(repository.prs || []);
 
     const head = {
         cells: [
@@ -54,7 +43,7 @@ const PullRequestTable = ({ repository }) => {
 
     console.log(`Pull requests for ${repository.name}:`, pullRequests);
 
-    const rows = pullRequests.map((pr) => ({
+    const rows = pullRequests.list.map((pr) => ({
         key: String(pr.id),
         cells: [
             {
@@ -72,14 +61,14 @@ const PullRequestTable = ({ repository }) => {
             {
                 key: 'title',
                 content: (
-                    <Link href={pr.html_url} target="_blank">
+                    <Link href={pr.url} target="_blank">
                         {pr.title}
                     </Link>
                 )
             },
             {
                 key: 'sourceBranch',
-                content: pr.head?.ref ?? '-'
+                content: pr.sourceBranch ?? '-'
             },
             {
                 key: 'transition',
@@ -87,11 +76,11 @@ const PullRequestTable = ({ repository }) => {
             },
             {
                 key: 'targetBranch',
-                content: pr.base?.ref ?? '-'
+                content: pr.targetBranch ?? '-'
             },
             {
                 key: 'author',
-                content: pr.user?.login ?? '-'
+                content: pr.author?.login ?? '-'
             },
             {
                 key: 'status',

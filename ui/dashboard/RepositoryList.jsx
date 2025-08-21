@@ -24,6 +24,7 @@ const RepositoryList = () => {
         setLoading(true);
         getAllRepositories(loginData.token)
             .then(data => {
+                console.info("Repositories", data);
                 setLoading(false);
                 setRepositories(data);
                 return data;
@@ -60,7 +61,7 @@ const RepositoryList = () => {
                                         <Lozenge appearance={repo.private ? 'removed' : 'success'} isBold>
                                             {repo.private ? 'Private' : 'Public'}
                                         </Lozenge>
-                                        {repo.language && <Tag text={repo.language} />}
+                                        {repo.language.length ? repo.language.map(l => <Tag text={l} />) : <></>}
                                     </Inline>
                                     <PullRequestTable repository={repo} />
                                 </Stack>

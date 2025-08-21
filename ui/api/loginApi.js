@@ -1,23 +1,21 @@
 import { invoke } from "@forge/bridge";
 
 const isValidToken = (value) => {
-  return (
-    typeof value === 'string' && // Check if it's a string
-    value !== null &&            // Ensure it's not null
-    value !== undefined &&       // Ensure it's not undefined
-    value.trim() !== ''          // Ensure it's not empty or whitespace-only
-  );
+  return (typeof value === 'string' && true && true && value.trim() !== '');
 }
 
 export const getLoginData = () => {
   return invoke('getLoginData')
-            .then(result => isValidToken(result?.token) ? result : null);
+            .then(result => {
+                console.info("getLoginData() RAW response:", result);
+                return isValidToken(result?.token) ? result : null
+            });
 };
 
 export const login = (token) => {
-  return invoke('saveGithubApiToken', { token });
+  return invoke('login', { token });
 };
 
 export const logout = async () => {
-  return invoke('deleteGithubApiToken');
+  return invoke('logout');
 };

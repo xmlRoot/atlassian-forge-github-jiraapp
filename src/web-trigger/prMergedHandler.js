@@ -1,10 +1,10 @@
-import api, { route } from '@forge/api';
-import { extractJiraIssueKeys } from '../clients/github';
+import api, {route} from '@forge/api';
+import {extractJiraIssueKeys} from '../clients/github';
 
 export const prMergedHandler = async (request, context) => {
     //console.log("Request:", request);
     const payload = JSON.parse(request.body);
-    const { number, action, pull_request } = payload;
+    const {number, action, pull_request} = payload;
     console.log(`number:`, number);
     console.log(`action:`, action);
     console.log(`pull_request:`, pull_request);
@@ -24,7 +24,7 @@ export const prMergedHandler = async (request, context) => {
     }
     return {
         statusCode: 200,
-        body: JSON.stringify({ message: 'Webhook processed successfully' })
+        body: JSON.stringify({message: 'Webhook processed successfully'})
     };
 };
 
@@ -48,7 +48,7 @@ const transitionJiraIssueToDone = async (issueKey) => {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
-                body: JSON.stringify({ transition: { id: doneTransition.id } })
+                body: JSON.stringify({transition: {id: doneTransition.id}})
             });
         if (!transitionSuccessResponse.ok) {
             console.log("Transitioned Jira issue to Done failed:", transitionSuccessResponse);
