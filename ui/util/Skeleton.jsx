@@ -1,7 +1,9 @@
 import React from 'react';
 import { Box, Stack, Spinner } from '@forge/react';
 
-const CentralSpinner = () => (
+const CentralSpinner = ({ centered }) => !centered 
+   ? <Spinner label="loading" />
+   : (
     <Stack grow="fill" alignBlock="center" alignInline="center">
         <Stack space="space.1000" alignInline="center">
             <Box />
@@ -12,8 +14,8 @@ const CentralSpinner = () => (
     </Stack>
 )
 
-const Skeleton = ({ loading, children }) => {
-    return loading ? <CentralSpinner /> : children
+const Skeleton = ({ loading, centered = false, children }) => {
+    return loading ? <CentralSpinner centered={centered} /> : children
 }
 
 export default Skeleton;

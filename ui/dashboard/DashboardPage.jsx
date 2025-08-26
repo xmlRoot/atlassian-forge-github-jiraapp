@@ -1,29 +1,39 @@
-import React, { useState } from 'react';
-import { Form, FormHeader, FormFooter, LoadingButton, Text, useForm } from '@forge/react';
-import { logout } from "../api/tokenApi";
+import React, { useState, useContext } from 'react';
+import { Form, FormHeader, FormFooter, LoadingButton, Stack, Text, useForm } from '@forge/react';
+import { LoginContext } from '../context/LoginContext';
+import RepositoryList from "./RepositoryList";
+import { logout } from "../api/loginApi";
 
-const DashboardPage = ({ apiToken, deleteToken }) => {
+const DashboardPage = ({ deleteToken }) => {
+  const loginData = useContext(LoginContext);
   const { handleSubmit } = useForm();
-  const [isLoadingForm, setIsLoadingForm] = useState(false);
+  const [loading, setLoading] = useState(false);
   const onLogout = async () => {
     console.log('Attempting Logout');
-    setIsLoadingForm(true);
+    setLoading(true);
     logout()
       .then(response => {
-        setIsLoadingForm(false);
+        setLoading(false);
         console.log('logout() backend response:', response);
         if (response.ok) {
           deleteToken();
         }
       });
   }
+
   return (
-    <Form onSubmit={handleSubmit(onLogout)}>
-      <FormHeader title="Current API Token">{apiToken}</FormHeader>
-      <FormFooter align="start">
-        <LoadingButton appearance="primary" type="submit" isLoading={isLoadingForm}>Logout</LoadingButton>
-      </FormFooter>
-    </Form>
+    <Stack space="space.200">
+      <Form onSubmit={handleSubmit(onLogout)}>
+        <FormHeader title="Current user">
+          <Text>User: {loginData.user}</Text>
+          <Text>API Token: {loginData.token}</Text>
+        </FormHeader>
+        <FormFooter align="start">
+          <LoadingButton appearance="primary" type="submit" isLoading={loading}>Logout</LoadingButton>
+        </FormFooter>
+      </Form>
+      <RepositoryList />
+    </Stack>
   );
 };
 

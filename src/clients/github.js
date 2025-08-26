@@ -1,0 +1,161 @@
+import api from '@forge/api';
+
+const authHeadersFor = token => ({
+    headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+    }
+});
+
+export const isValidToken = async (token) => {
+    const response = await fetchRepositories(token);
+    return response.ok;
+}
+
+const fetchRepositories = async (token) => {
+    if (!token) throw new Error('GitHub token is required to list repositories');
+
+    console.log("Fetching Github Repositories")
+    const response = await api.fetch('https://api.github.com/user/repos?per_page=100', authHeadersFor(token));
+    console.log("Fetched Github repositories OK:", response.ok)
+    
+    return response;
+}
+
+export const getAllRepositoriesFromGithub = async (token) => {
+    const response = await fetchRepositories(token);
+    if (!response.ok) {
+        const text = await response.text().catch(() => response.statusText);
+        throw new Error(`GitHub repository request failed: ${response.status} ${text}`);
+    }
+    return await response.json();
+}
+
+export const getAllOpenPullRequestFromGithub = async (token, owner, name) => {
+    if (!token) throw new Error('GitHub token is required to list pull requests');
+    if (!owner) throw new Error('Repository owner is required to list pull requests');
+    if (!name) throw new Error('Repository name is required to list pull requests');
+
+    const onlySearchForPrsInState = 'open';
+    const pageLimit = '100';
+    const response = await api.fetch(
+        `https://api.github.com/repos/${owner.toUpperCase()}/${name.toUpperCase()}/pulls?state=${onlySearchForPrsInState}&per_page=${pageLimit}`,
+        authHeadersFor(token)
+    );
+
+    if (!response.ok) {
+        const text = await response.text().catch(() => response.statusText);
+        throw new Error(`GitHub pull requests request failed: ${response.status} ${text}`);
+    }
+
+    const prs = await response.json();
+
+    const processedPrs = await Promise.all(
+        prs.map(
+            async pr => ({
+                ...pr,
+                issueKeys: extractJiraIssueKeys(pr),
+                awaitsApproval: await isNotApprovedBy(token, pr, owner)
+            })
+        )
+    );
+
+    return processedPrs;
+}
+
+// TODO: This approach is naive. Implement a more robust way ot extracting.
+// Extract JIRA keys (uppercase letters + hyphen + digits) from title/branch
+const issueKeyRegex = /[A-Z][A-Z0-9_]*-\d+/g;
+export const extractJiraIssueKeys = pr => {
+    const keys = new Set();
+    const candidates = [];
+
+    if (pr.title) candidates.push(pr.title);
+    if (pr.head?.ref) candidates.push(pr.head.ref);
+
+    candidates.forEach(str => {
+        const matches = str.match(issueKeyRegex);
+        if (matches) matches.forEach(k => keys.add(k));
+    });
+    return Array.from(keys);
+}
+
+const isNotApprovedBy = async (token, pr, owner) => {
+    const response = await api.fetch(
+        `https://api.github.com/repos/${owner.toLowerCase()}/${pr.base.repo.name}/pulls/${pr.number}/reviews`,
+        authHeadersFor(token)
+    );
+    if (!response.ok) {
+        const text = await response.text().catch(() => response.statusText);
+        throw new Error(`GitHub reviews request failed: ${response.status} ${text}`);
+    }
+    const reviews = await response.json();
+
+    const ownerReviews = reviews.filter(review => review.user.login.toLowerCase() === owner.toLowerCase());
+    const latestReview = ownerReviews
+        .reduce((latest, current) =>
+            new Date(current.submitted_at) > new Date(latest.submitted_at)
+                ? current
+                : latest,
+            ownerReviews[0]);
+
+    const isApprovedBy = latestReview && latestReview.state === 'APPROVED';
+    return !isApprovedBy;
+};
+
+
+export const mergePullRequestFromGithub = async (token, owner, name, prId) => {
+    if (!token) throw new Error('GitHub token is required to merge pull requests');
+
+    const response = await api.fetch(
+        `https://api.github.com/repos/${owner}/${name}/pulls/${prId}/merge`,
+        {
+            method: 'PUT',
+            headers: authHeadersFor(token).headers
+        }
+    );
+    if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        console.log("Merging PR failed:", response, "Response body:", data);
+        throw new Error(data.message || 'Failed to merge pull request');
+    }
+    return await response.json();
+}
+
+export const approvePullRequestFromGithub = async (token, owner, name, pullNumber) => {
+    if (!token) throw new Error('GitHub token is required to merge pull requests');
+
+    const response = await api.fetch(
+        `https://api.github.com/repos/${owner}/${name}/pulls/${pullNumber}/reviews`,
+        {
+            method: 'POST',
+            headers: authHeadersFor(token).headers,
+            body: JSON.stringify({ event: 'APPROVE' })
+        }
+    );
+    if (!response.ok) {
+        const data = await response.json();
+        console.log('Approve errors', data);
+        throw new Error(data.errors.join('. '));
+    }
+    return await response.json();
+}
+
+export const unapprovePullRequestFromGithub = async (token, owner, name, pullNumber) => {
+    if (!token) throw new Error('GitHub token is required to merge pull requests');
+
+    const response = await api.fetch(
+        `https://api.github.com/repos/${owner}/${name}/pulls/${pullNumber}/reviews`,
+        {
+            method: 'POST',
+            headers: authHeadersFor(token).headers,
+            body: JSON.stringify({ event: 'REQUEST_CHANGES', body: 'Reverting previous approval' })
+        }
+    );
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.errors.join('. '));
+    }
+    return await response.json();
+}
