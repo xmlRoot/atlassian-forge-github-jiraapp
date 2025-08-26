@@ -38,7 +38,8 @@ export const saveGithubApiToken = async ({ payload }) => {
   try {
     const result = await kvs.setSecret(GITHUB_API_TOKEN_KEY, token);
     console.log('Saved token in DB:', result);
-    return { ok: true };
+    // TODO: use githubClient to fetch user data, instead of hardcoding
+    return { ok: true, user: 'atlassiandevhub-rgb' };
   } catch(error) {
     console.error('Couldn\'t save token in DB:', GITHUB_API_TOKEN_KEY);
     return { ok: false, message: error.message };

@@ -27,7 +27,7 @@ const App = () => {
       <LoginDataProvider loginData={loginData}>
         {loginData?.token
           ? <DashboardPage deleteToken={() => setData(EMPTY_LOGIN_DATA)} />
-          : <AuthPage onLoginSuccess={token => setData({ token })} />}
+          : <AuthPage onLoginSuccess={loginDetails => setData(loginDetails)} />}
       </LoginDataProvider>
     </Skeleton>
   );
