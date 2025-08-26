@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Form, FormHeader, FormSection, FormFooter, Label, Textfield, LoadingButton, HelperMessage, Stack, Image, RequiredAsterisk, useForm, ErrorMessage, SectionMessage, Text } from '@forge/react';
-import { login } from "../api/tokenApi";
+import { Box, Form, FormHeader, FormSection, Label, Textfield, LoadingButton, HelperMessage, Stack, Image, RequiredAsterisk, useForm, ErrorMessage, SectionMessage, Text } from '@forge/react';
+import { login } from "../api/loginApi";
 
-const AuthPage = ({ saveToken }) => {
+const AuthPage = ({ onLoginSuccess }) => {
   const { register, getFieldId, handleSubmit, formState: { errors, isSubmitting } } = useForm();
   const [saveError, setSaveError] = useState(null);
   const [isLoadingForm, setIsLoadingForm] = useState(false);
-  const onLoginSuccess = async (data) => {
+  const handleLoginSuccess = async (data) => {
     const { token } = data;
     console.log('Attempting to save GitHub token:', token);
     setIsLoadingForm(true);
@@ -16,7 +16,7 @@ const AuthPage = ({ saveToken }) => {
         setIsLoadingForm(false);
         console.log('login() backend response:', response);
         if (response.ok) {
-          saveToken(token);
+          onLoginSuccess(token);
         } else {
           setSaveError(response.message);
         }
@@ -26,7 +26,7 @@ const AuthPage = ({ saveToken }) => {
     <Stack grow="fill" alignBlock="center" alignInline="center">
         <Stack space="space.100" alignInline="center">
             <Box />
-            <Form onSubmit={handleSubmit(onLoginSuccess)}>
+            <Form onSubmit={handleSubmit(handleLoginSuccess)}>
                 <FormHeader title="Login">
                     Connect your GitHub account to view the Dashboard.
                 </FormHeader>

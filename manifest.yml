@@ -1,20 +1,29 @@
 modules:
+  webtrigger:
+    - key: pr-merged-trigger
+      function: prMergedHandler
+      response:
+        type: dynamic
   jira:adminPage:
     - key: github-link-hello-world-admin-page
       title: "Github Link"
       resource: main
       resolver:
-        function: resolver
+        function: resolvers
       render: native
   function:
-    - key: resolver
-      handler: index.handler
+    - key: resolvers
+      handler: index.resolvers
+    - key: prMergedHandler
+      handler: index.prMergedHandler
 resources:
   - key: main
     path: ui/index.jsx
 permissions:
   scopes:
     - storage:app
+    - read:jira-work
+    - write:jira-work
   external:
     fetch:
       backend:

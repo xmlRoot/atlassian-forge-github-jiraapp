@@ -3,14 +3,15 @@ import { isValidToken } from '../clients/github';
 
 const GITHUB_API_TOKEN_KEY = 'github-api-token';
 
-export const getGithubApiToken = async () => {
+export const getLoginData = async () => {
   try {
     const token = await kvs.getSecret(GITHUB_API_TOKEN_KEY);
     console.log('Fetched token from DB:', token);
-    return token;
+    // TODO: use githubClient to fetch user data, instead of hardcoding
+    return { token, user: 'atlassiandevhub-rgb' };
   } catch(error) {
     console.error('Couldn\'t fetch token from DB:', GITHUB_API_TOKEN_KEY);
-    return null;
+    return { token: null };
   }
 };
 
