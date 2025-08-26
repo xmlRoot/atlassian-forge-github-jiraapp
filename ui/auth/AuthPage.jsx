@@ -16,7 +16,7 @@ const AuthPage = ({ onLoginSuccess }) => {
         setIsLoadingForm(false);
         console.log('login() backend response:', response);
         if (response.ok) {
-          onLoginSuccess(token);
+          onLoginSuccess({ token, user: response.user });
         } else {
           setSaveError(response.message);
         }

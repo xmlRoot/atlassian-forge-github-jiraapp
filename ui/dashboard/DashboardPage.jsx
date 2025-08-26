@@ -25,8 +25,7 @@ const DashboardPage = ({ deleteToken }) => {
     <Stack space="space.200">
       <Form onSubmit={handleSubmit(onLogout)}>
         <FormHeader title="Current user">
-          <Text>User: {loginData.user}</Text>
-          <Text>API Token: {loginData.token}</Text>
+          <Text>{loginData.user}</Text>
         </FormHeader>
         <FormFooter align="start">
           <LoadingButton appearance="primary" type="submit" isLoading={loading}>Logout</LoadingButton>
