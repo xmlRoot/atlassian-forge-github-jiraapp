@@ -9,9 +9,9 @@ const isValidToken = (value) => {
   );
 }
 
-export const getToken = () => {
-  return invoke('getGithubApiToken')
-            .then(result => isValidToken(result) ? result : null);
+export const getLoginData = () => {
+  return invoke('getLoginData')
+            .then(result => isValidToken(result?.token) ? result : null);
 };
 
 export const login = (token) => {

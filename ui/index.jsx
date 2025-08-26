@@ -1,29 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import ForgeReconciler from '@forge/react';
-import { getToken } from "./api/tokenApi";
+import { getLoginData } from "./api/loginApi";
 import Skeleton from './util/Skeleton';
 import AuthPage from './auth/AuthPage';
 import DashboardPage from './dashboard/DashboardPage';
+import { LoginDataProvider } from './context/LoginContext';
+
+const EMPTY_LOGIN_DATA = { token: null };
 
 const App = () => {
-  const [apiToken, setApiToken] = useState({ loading: false, value: null });
-  const setLoadingApiToken = () => setApiToken({ loading: true, value: null });
+  const [loading, setLoading] = useState(false);
+  const [loginData, setData] = useState(EMPTY_LOGIN_DATA);
 
   useEffect(() => {
-    setLoadingApiToken();
-    getToken()
-      .then(token => {
-        console.log('getToken() backend response:', token);
-        setApiToken({ loading: false, value: token });
+    setLoading(true);
+    getLoginData()
+      .then(data => {
+        console.log('getLoginData() backend response:', data);
+        setLoading(false);
+        setData(data);
       });
   }, []);
-  
-  const { loading, value } = apiToken;
+
   return (
     <Skeleton loading={loading} centered>
-      {value 
-        ? <DashboardPage apiToken={value} deleteToken={() => setApiToken({ loading: false, value: null })} />
-        : <AuthPage saveToken={token => setApiToken({ loading: false, value: token })} />}
+      <LoginDataProvider loginData={loginData}>
+        {loginData?.token
+          ? <DashboardPage deleteToken={() => setData(EMPTY_LOGIN_DATA)} />
+          : <AuthPage onLoginSuccess={token => setData({ token })} />}
+      </LoginDataProvider>
     </Skeleton>
   );
 };

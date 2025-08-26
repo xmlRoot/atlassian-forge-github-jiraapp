@@ -1,15 +1,18 @@
 import Resolver from '@forge/resolver';
-import { getGithubApiToken, saveGithubApiToken, deleteGithubApiToken } from '../services/token';
-import { getAllRepositories, getAllOpenPRs } from '../services/github';
+import { getLoginData, saveGithubApiToken, deleteGithubApiToken } from '../services/login';
+import { getAllRepositories, getAllOpenPRs, mergePR, approvePR, unapprovePR } from '../services/github';
 
 const resolver = new Resolver();
 
 // Token Service endpoints
-resolver.define('getGithubApiToken', getGithubApiToken);
+resolver.define('getLoginData', getLoginData);
 resolver.define('saveGithubApiToken', saveGithubApiToken);
 resolver.define('deleteGithubApiToken', deleteGithubApiToken);
 // Github Service endpoint
 resolver.define('getAllRepositories', getAllRepositories);
 resolver.define('getAllOpenPRs', getAllOpenPRs);
+resolver.define('mergePR', mergePR);
+resolver.define('approvePR', approvePR);
+resolver.define('unapprovePR', unapprovePR);
 
-export const handler = resolver.getDefinitions();
+export const resolvers = resolver.getDefinitions();
