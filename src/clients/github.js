@@ -56,6 +56,7 @@ export const getAllOpenPullRequestFromGithub = async (token, owner, name) => {
             async pr => ({
                 ...pr,
                 issueKeys: extractJiraIssueKeys(pr),
+                // We should also pass the currentlyLoggedUser (not the just the owner). However adding this additional logic seems out-of-scope
                 awaitsApproval: await isNotApprovedBy(token, pr, owner)
             })
         )
